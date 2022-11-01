@@ -1,4 +1,4 @@
-var currentTasks = [];
+var timeBlockTasks = [];
 
 // Display current date in jumbotron
 var headerDate = document.querySelector("#currentDay");
@@ -6,26 +6,62 @@ var todaysDate = moment().format("dddd, MMMM Do, YYYY");
 headerDate.textContent = todaysDate;
 
 // each hour block set to current time 
-var currentTime = moment().format("H");
-console.log(currentTime);
+function checkCurrentTime() {
+  var currentHour = moment().hours();
 
+  $(".time-block").each(function() {
+    var taskHour = parseInt(
+    $(this)
+    .attr("id"))
 
-function hourChecker() {
-  // put each hour in a span tag
-  // compare span value to the currentTime variable
-  // set color attributes 
+    if (currentHour === taskHour) {
+      // taskHourEl.setAttribute("class", "col-9 description present");
+      $(this).addClass("present");
+      $(this).removeClass("past");
+      $(this).removeClass("future");
+    }
+    else if (currentHour > taskHour) {
+      $(this).addClass("past");
+      $(this).removeClass("future");
+      $(this).removeClass("present");
+    }
+    else {
+      $(this).addClass("future");
+      $(this).removeClass("past");
+      $(this).removeClass("present");
+    }
+  })
+
 };
 
-// function saveButton() {
-//   var saveText = $(this).$("#task-description").val();
-// };
+checkCurrentTime();
 
-$(".saveBtn").click(function() {
-  console.log("click");
-  var hourTextbox = $(".description").val();
-  console.log(hourTextbox);
+// save tasks to localStorage
+function saveTask() {
+  localStorage.setItem("savedTasks", JSON.stringify(timeBlockTasks));
+};
 
-  var hourTime = $("h3").text();
-  // gets ALL hours of h3 
-  console.log(hourTime);
+// when save button clicked grab time blocks hour / new task then saveTask();
+$(".time-block").on("click", "button", function() {
+  var hourTextbox = $(this).siblings(".description").val(); 
+  var hourTime = $(this).siblings(".hour").text().trim();
+
+  // push new changes to empty array
+  timeBlockTasks.push({
+    text: hourTextbox,
+    hour: hourTime
+  }); 
+  console.log(timeBlockTasks);
+  saveTask();
 });
+
+// load saved tasks from localStorage
+function loadTasks() {
+  var checkTasks = JSON.parse(localStorage.getItem("savedTasks"));
+  console.log(checkTasks);
+  // how do I get the content to load back on page?? 
+};
+
+$("#9 .description").val(localStorage.getItem("hour"));
+
+loadTasks();
